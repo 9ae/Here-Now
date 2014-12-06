@@ -1,9 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'hino rei'
+            keyPassword 'marsEmber'
+            storeFile file('/Users/alice/Workspaces/nyandroid.jks')
+            storePassword 'senshi'
+        }
+    }
     compileSdkVersion 21
     buildToolsVersion "21.1.1"
-
     defaultConfig {
         applicationId "me.valour.hereandnow"
         minSdkVersion 16
