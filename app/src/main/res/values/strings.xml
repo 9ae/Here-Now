@@ -7,4 +7,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="loading">Talking to Foursquare servers…</string>
 
+    <string name="txt_search_venue">Where are you</string>
+
 </resources>

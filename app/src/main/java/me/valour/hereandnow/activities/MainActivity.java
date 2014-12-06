@@ -1,4 +1,4 @@
-package me.valour.hereandnow;
+package me.valour.hereandnow.activities;
 
 import android.app.Activity;
 import android.app.ActionBar;
@@ -14,11 +14,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 
+import me.valour.hereandnow.R;
 import me.valour.hereandnow.constants.Himitsu;
+import me.valour.hereandnow.fragments.FindVenueFragment;
 import me.valour.hereandnow.fragments.LoginFragment;
 
 
-public class MainActivity extends Activity implements LoginFragment.LoginFragmentListener {
+public class MainActivity extends Activity implements
+        LoginFragment.LoginFragmentListener,
+        FindVenueFragment.FindVenueFragmentListener {
 
     FragmentManager fm;
 
@@ -27,10 +31,15 @@ public class MainActivity extends Activity implements LoginFragment.LoginFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fm  = getFragmentManager();
-        if (savedInstanceState == null) {
-            fm.beginTransaction()
-                    .add(R.id.container, new LoginFragment())
-                    .commit();
+        String fsToken = getToken(Himitsu.FourSquare.propKey);
+        if(fsToken!=null){
+            launchFindVenue(fsToken);
+        } else {
+            if (savedInstanceState == null) {
+                fm.beginTransaction()
+                        .add(R.id.container, new LoginFragment())
+                        .commit();
+            }
         }
     }
 
@@ -86,25 +95,14 @@ public class MainActivity extends Activity implements LoginFragment.LoginFragmen
     @Override
     public void setFourSquareToken(String token) {
         setToken(Himitsu.FourSquare.propKey, token);
+        launchFindVenue(token);
+    }
 
+    public void launchFindVenue(String token){
+        FindVenueFragment fragment = FindVenueFragment.newInstance(token);
         fm.beginTransaction()
-                .replace(R.id.container, new PlaceholderFragment())
+                .replace(R.id.container, fragment)
                 .commit();
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-    }
 }
