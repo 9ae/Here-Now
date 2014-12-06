@@ -1,6 +1,7 @@
 package me.valour.hereandnow.fragments;
 
 import android.app.Activity;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -21,6 +22,8 @@ public class FindVenueFragment extends Fragment {
 
     private EditText searchField;
 
+    private String currentCoords = null;
+
     // TODO: Rename and change types and number of parameters
     public static FindVenueFragment newInstance(String token) {
         FindVenueFragment fragment = new FindVenueFragment();
@@ -32,6 +35,10 @@ public class FindVenueFragment extends Fragment {
 
     public FindVenueFragment() {
         // Required empty public constructor
+    }
+
+    public void updateCoords(double lat, double lon){
+        currentCoords = String.format("%f,%f", lat, lon);
     }
 
     @Override
@@ -48,7 +55,12 @@ public class FindVenueFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_find_venue, container, false);
         searchField = (EditText) view.findViewById(R.id.input_search_venue);
-     //   searchField.setHint(fourSquareToken);
+        Location location = mListener.getLocation();
+        if(location!=null){
+            updateCoords(location.getLatitude(),location.getLongitude());
+        } else {
+            currentCoords = null;
+        }
         return view;
     }
 
@@ -80,8 +92,7 @@ public class FindVenueFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface FindVenueFragmentListener {
-        // TODO: Update argument type and name
-
+        public Location getLocation();
     }
 
 }

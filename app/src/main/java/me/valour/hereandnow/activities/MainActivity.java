@@ -2,17 +2,27 @@ package me.valour.hereandnow.activities;
 
 import android.app.Activity;
 import android.app.ActionBar;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
 
 import me.valour.hereandnow.R;
 import me.valour.hereandnow.constants.Himitsu;
@@ -22,13 +32,32 @@ import me.valour.hereandnow.fragments.LoginFragment;
 
 public class MainActivity extends Activity implements
         LoginFragment.LoginFragmentListener,
-        FindVenueFragment.FindVenueFragmentListener {
+        FindVenueFragment.FindVenueFragmentListener,
+        GooglePlayServicesClient.ConnectionCallbacks,
+        GooglePlayServicesClient.OnConnectionFailedListener{
 
     FragmentManager fm;
+    Location mCurrentLocation;
+    LocationClient mLocationClient;
+
+    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mLocationClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mLocationClient.disconnect();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLocationClient = new LocationClient(this, this, this);
         setContentView(R.layout.activity_main);
         fm  = getFragmentManager();
         String fsToken = getToken(Himitsu.FourSquare.propKey);
@@ -98,11 +127,113 @@ public class MainActivity extends Activity implements
         launchFindVenue(token);
     }
 
+    @Override
+    public Location getLocation(){
+        if (servicesConnected() && mLocationClient.isConnected()) {
+            mCurrentLocation = mLocationClient.getLastLocation();
+            return mCurrentLocation;
+        } else {
+            return null;
+        }
+    }
+
     public void launchFindVenue(String token){
         FindVenueFragment fragment = FindVenueFragment.newInstance(token);
         fm.beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
+    }
+
+    private boolean servicesConnected() {
+        // Check that Google Play services is available
+        int resultCode =
+                GooglePlayServicesUtil.
+                        isGooglePlayServicesAvailable(this);
+        // If Google Play services is available
+        if (ConnectionResult.SUCCESS == resultCode) {
+            // In debug mode, log the status
+            Log.d("Location Updates",
+                    "Google Play services is available.");
+            // Continue
+            return true;
+            // Google Play services was not available for some reason.
+            // resultCode holds the error code.
+        } else {
+            // Get the error dialog from Google Play services
+            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(
+                    resultCode,
+                    this,
+                    CONNECTION_FAILURE_RESOLUTION_REQUEST);
+
+            // If Google Play services can provide an error dialog
+            if (errorDialog != null) {
+                // Create a new DialogFragment for the error dialog
+                ErrorDialogFragment errorFragment =
+                        new ErrorDialogFragment();
+                // Set the dialog in the DialogFragment
+                errorFragment.setDialog(errorDialog);
+                // Show the error dialog in the DialogFragment
+                errorFragment.show(fm, "Location Updates");
+            }
+            return false;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(
+            int requestCode, int resultCode, Intent data) {
+        // Decide what to do based on the original request code
+        switch (requestCode) {
+            case CONNECTION_FAILURE_RESOLUTION_REQUEST :
+            /*
+             * If the result code is Activity.RESULT_OK, try
+             * to connect again
+             */
+                switch (resultCode) {
+                    case Activity.RESULT_OK :
+                    /*
+                     * Try the request again
+                     */
+
+                        break;
+                }
+        }
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+      //  mLocationClient.connect();
+        getLocation();
+    }
+
+    @Override
+    public void onDisconnected() {
+      //  mLocationClient.disconnect();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+
+    public static class ErrorDialogFragment extends DialogFragment {
+        // Global field to contain the error dialog
+        private Dialog mDialog;
+        // Default constructor. Sets the dialog field to null
+        public ErrorDialogFragment() {
+            super();
+            mDialog = null;
+        }
+        // Set the dialog to display
+        public void setDialog(Dialog dialog) {
+            mDialog = dialog;
+        }
+        // Return a Dialog to the DialogFragment.
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return mDialog;
+        }
     }
 
 }
