@@ -25,6 +25,7 @@
             android:layout_height="50dp"
             android:layout_margin="10dp"
             android:layout_gravity="bottom"
+            style="@style/AllButtons"
             />
     </RelativeLayout>
 </RelativeLayout>

@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="me.valour.hereandnow.fragments.FindVenueFragment"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/bg">
 
     <EditText
         android:layout_width="match_parent"
@@ -11,7 +12,7 @@
         android:hint="@string/txt_search_venue"
         android:singleLine="true"
         android:imeOptions="actionDone"
-        android:inputType="text" />
+        />
 
     <ListView
         android:id="@+id/lv_venues"

@@ -376,8 +376,8 @@ public class NativeCameraFragment extends Fragment {
                     }*/
                 }
 
-                final int scaledChildHeight = previewHeight * width / previewWidth;
                 mCamera.setDisplayOrientation(90);
+                final int scaledChildHeight = previewHeight * width / previewWidth;
                 mCameraView.layout(0, height - scaledChildHeight, width, height);
             }
         }

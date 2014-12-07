@@ -1,7 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="me.valour.hereandnow.fragments.CheckInFragment">
+    tools:context="me.valour.hereandnow.fragments.CheckInFragment"
+    android:background="@color/bg">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -19,6 +20,10 @@
         android:id="@+id/btn_find_others"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:src="@android:drawable/ic_menu_compass"
+        android:text="@string/dsc_find_others"
+        android:src="@drawable/who"
+        android:background="@color/button_bg"
+        android:minHeight="210dp"
+        android:minWidth="210dp"
         android:contentDescription="@string/dsc_find_others"/>
 </RelativeLayout>

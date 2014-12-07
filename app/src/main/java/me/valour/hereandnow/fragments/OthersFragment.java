@@ -64,7 +64,7 @@ public class OthersFragment extends Fragment {
     }
 
     public String constructAstraStreamUrl(String checkinId){
-        return "https://api.astra.io/v0/bucket/"+venueId+"/stream/"+checkinId+"?mode=fit&width=240";
+        return "https://api.astra.io/v0/bucket/"+venueId+"/stream/"+checkinId+"?mode=fit&width=300&orient=true";
     }
 
     public void getOtherCheckinsList(){

@@ -71,6 +71,7 @@ public class PeepsAdapater extends BaseAdapter {
                 .error(android.R.drawable.btn_star_big_off)
                 .intoImageView(holder.img);
 
+        holder.img.setRotation(-90);
         return v;
     }
 

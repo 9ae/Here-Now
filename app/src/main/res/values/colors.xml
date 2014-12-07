@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#FFEEEEEE</color>
+
+    <color name="text">#FF212121</color>
+
+    <color name="button_bg">#FFff8800</color>
+    <color name="button_text">#FFFFFFFF</color>
+    <color name="button_hover">#FFcc0000</color>
+
+    <color name="foursquare_pink">#FFf94877</color>
+</resources>
