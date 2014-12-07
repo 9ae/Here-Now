@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.etsy.android.grid.StaggeredGridView;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
@@ -16,6 +17,7 @@ import com.koushikdutta.ion.Ion;
 import java.util.ArrayList;
 
 import me.valour.hereandnow.R;
+import me.valour.hereandnow.adapters.PeepsAdapater;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,6 +36,9 @@ public class OthersFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String venueId;
     private ArrayList<String> imageURLs;
+
+    StaggeredGridView gridView;
+    PeepsAdapater adapater;
 
     private OnFragmentInteractionListener mListener;
 
@@ -59,11 +64,10 @@ public class OthersFragment extends Fragment {
     }
 
     public String constructAstraStreamUrl(String checkinId){
-        return "https://api.astra.io/v0/bucket/"+venueId+"/stream/"+checkinId;
+        return "https://api.astra.io/v0/bucket/"+venueId+"/stream/"+checkinId+"?mode=fit&width=240";
     }
 
     public void getOtherCheckinsList(){
-        imageURLs = new ArrayList<String>();
         Ion.with(getActivity()).load("http://hereandnowserver.appspot.com/checkin?venue_id="+venueId)
                 .asJsonObject().setCallback(new FutureCallback<JsonObject>() {
             @Override
@@ -73,8 +77,15 @@ public class OthersFragment extends Fragment {
                     String id = idsArray.get(i).getAsString();
                     imageURLs.add( constructAstraStreamUrl(id) );
                 }
+                adapater.notifyDataSetChanged();
             }
         });
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getOtherCheckinsList();
     }
 
     @Override
@@ -90,7 +101,13 @@ public class OthersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_others, container, false);
+        View view =  inflater.inflate(R.layout.fragment_others, container, false);
+
+        gridView = (StaggeredGridView) view.findViewById(R.id.grid_view);
+        imageURLs = new ArrayList<String>();
+        adapater = new PeepsAdapater(getActivity(), imageURLs);
+        gridView.setAdapter(adapater);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

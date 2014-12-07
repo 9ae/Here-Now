@@ -39,6 +39,7 @@ import me.valour.hereandnow.constants.Himitsu;
 import me.valour.hereandnow.fragments.CheckInFragment;
 import me.valour.hereandnow.fragments.FindVenueFragment;
 import me.valour.hereandnow.fragments.LoginFragment;
+import me.valour.hereandnow.fragments.OthersFragment;
 import me.valour.hereandnow.objects.AstraUploader;
 import me.valour.hereandnow.objects.Venue;
 
@@ -48,7 +49,8 @@ public class MainActivity extends Activity implements
         FindVenueFragment.FindVenueFragmentListener,
         CheckInFragment.OnFragmentInteractionListener,
         GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener{
+        GooglePlayServicesClient.OnConnectionFailedListener,
+        OthersFragment.OnFragmentInteractionListener {
 
     FragmentManager fm;
     Location mCurrentLocation;
@@ -193,6 +195,12 @@ public class MainActivity extends Activity implements
     public void launchCheckin(){
         CheckInFragment fragment = CheckInFragment.newInstance(FourSquareCheckinId,
                 getToken(Himitsu.FourSquare.propKey) ,null, currentVenue.name);
+        fm.beginTransaction().replace(R.id.container, fragment).commit();
+    }
+
+    @Override
+    public void launchOthers(){
+        OthersFragment fragment = OthersFragment.newInstance(currentVenue.fourSquareId);
         fm.beginTransaction().replace(R.id.container, fragment).commit();
     }
 

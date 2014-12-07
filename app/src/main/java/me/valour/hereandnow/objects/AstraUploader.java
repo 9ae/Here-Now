@@ -75,7 +75,7 @@ public class AstraUploader {
                 .setLogging("request", Log.DEBUG)
                 .setHeader(Himitsu.Astra.authName,Himitsu.Astra.secret)
                 .setMultipartParameter("type", "image")
-                .setMultipartParameter("name",checkinID+".jpg")
+                .setMultipartParameter("name",checkinID)
                 .setMultipartFile("file", new File(filename))
                 .asJsonObject()
                 .setCallback(finalCallback);

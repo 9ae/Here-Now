@@ -88,6 +88,13 @@ public class CheckInFragment extends Fragment {
         welcomeText = (TextView) view.findViewById(R.id.tv_welcome);
         findOthersButton = (ImageButton) view.findViewById(R.id.btn_find_others);
         welcomeText.setText(getString(R.string.txt_welcome_to_venue, venueName));
+
+        findOthersButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.launchOthers();
+            }
+        });
       /*  preview = (ImageView) view.findViewById(R.id.img_selfie);
         Log.d("test", "token = " + userToken);
         Log.d("test","checkin id = "+checkInId);
@@ -165,6 +172,7 @@ public class CheckInFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
      //   public void onFragmentInteraction(Uri uri);
+        public void launchOthers();
     }
 
 }
