@@ -1,13 +1,24 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="me.valour.hereandnow.fragments.CheckInFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
-    <ImageView
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/img_selfie"
-        android:layout_gravity="center" />
-</FrameLayout>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/tv_welcome"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_find_others"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:src="@android:drawable/ic_menu_compass"
+        android:contentDescription="@string/dsc_find_others"/>
+</RelativeLayout>

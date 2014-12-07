@@ -11,7 +11,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import me.valour.hereandnow.R;
 
@@ -29,13 +31,17 @@ public class CheckInFragment extends Fragment {
     private static final String ARG_PARAM1 = "checkinId";
     private static final String ARG_PARAM2 = "userToken";
     private static final String ARG_PARAM3 = "selfiePath";
+    private static final String ARG_PARAM4 = "venueName";
 
     // TODO: Rename and change types of parameters
     private String checkInId;
     private String userToken;
     private String selfiePath;
+    private String venueName;
 
     private ImageView preview;
+    private TextView welcomeText;
+    private ImageButton findOthersButton;
 
     private OnFragmentInteractionListener mListener;
 
@@ -48,12 +54,13 @@ public class CheckInFragment extends Fragment {
      * @return A new instance of fragment CheckInFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CheckInFragment newInstance(String param1, String param2, String param3) {
+    public static CheckInFragment newInstance(String param1, String param2, String param3, String param4) {
         CheckInFragment fragment = new CheckInFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         args.putString(ARG_PARAM3, param3);
+        args.putString(ARG_PARAM4, param4);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,6 +76,7 @@ public class CheckInFragment extends Fragment {
             checkInId = getArguments().getString(ARG_PARAM1);
             userToken = getArguments().getString(ARG_PARAM2);
             selfiePath = getArguments().getString(ARG_PARAM3);
+            venueName = getArguments().getString(ARG_PARAM4);
         }
     }
 
@@ -77,10 +85,13 @@ public class CheckInFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_check_in, container, false);
-        preview = (ImageView) view.findViewById(R.id.img_selfie);
+        welcomeText = (TextView) view.findViewById(R.id.tv_welcome);
+        findOthersButton = (ImageButton) view.findViewById(R.id.btn_find_others);
+        welcomeText.setText(getString(R.string.txt_welcome_to_venue, venueName));
+      /*  preview = (ImageView) view.findViewById(R.id.img_selfie);
         Log.d("test", "token = " + userToken);
         Log.d("test","checkin id = "+checkInId);
-        Log.d("test","path ="+selfiePath);
+        Log.d("test","path ="+selfiePath); */
 
         return view;
     }
@@ -112,9 +123,9 @@ public class CheckInFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        setFullImageFromFilePath(selfiePath, preview);
+     //   setFullImageFromFilePath(selfiePath, preview);
     }
-
+/*
     private void setFullImageFromFilePath(String imagePath, ImageView imageView) {
         // Get the dimensions of the View
         int targetW = 100; //imageView.getWidth();
@@ -140,7 +151,7 @@ public class CheckInFragment extends Fragment {
         Bitmap bitmap = BitmapFactory.decodeFile(imagePath, bmOptions);
         imageView.setImageBitmap(bitmap);
     }
-
+*/
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

@@ -8,5 +8,8 @@
     <string name="loading">Talking to Foursquare servers…</string>
 
     <string name="txt_search_venue">Where are you?</string>
+    <string name="txt_welcome_to_venue">Welcome to %s</string>
+
+    <string name="dsc_find_others">Who is here?</string>
 
 </resources>

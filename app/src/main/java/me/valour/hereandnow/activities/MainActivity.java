@@ -26,6 +26,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.future.FutureCallback;
@@ -38,6 +39,7 @@ import me.valour.hereandnow.constants.Himitsu;
 import me.valour.hereandnow.fragments.CheckInFragment;
 import me.valour.hereandnow.fragments.FindVenueFragment;
 import me.valour.hereandnow.fragments.LoginFragment;
+import me.valour.hereandnow.objects.AstraUploader;
 import me.valour.hereandnow.objects.Venue;
 
 
@@ -188,8 +190,9 @@ public class MainActivity extends Activity implements
                 .commit();
     }
 
-    public void launchCheckin(String imagePath){
-        CheckInFragment fragment = CheckInFragment.newInstance(FourSquareCheckinId, getToken(Himitsu.FourSquare.propKey) ,imagePath);
+    public void launchCheckin(){
+        CheckInFragment fragment = CheckInFragment.newInstance(FourSquareCheckinId,
+                getToken(Himitsu.FourSquare.propKey) ,null, currentVenue.name);
         fm.beginTransaction().replace(R.id.container, fragment).commit();
     }
 
@@ -198,53 +201,20 @@ public class MainActivity extends Activity implements
             return;
         }
         selfieFilePath = filepath;
-        Ion.with(this)
-                .load("https://api.astra.io/v0/bucket/"+currentVenue.fourSquareId)
-                .setHeader(Himitsu.Astra.authName, Himitsu.Astra.secret)
-                .asJsonObject().setCallback(new FutureCallback<JsonObject>() {
-            @Override
-            public void onCompleted(Exception e, JsonObject result) {
-                if(result.get("ok").getAsBoolean()){
-
-                } else {
-                    createVenueBucket();
-                }
-            }
-        });;
-
-    }
-
-    private void createVenueBucket(){
-        Ion.with(this).load("https://api.astra.io/v0/bucket")
-                .setHeader(Himitsu.Astra.authName,Himitsu.Astra.secret)
-                .setBodyParameter("name",currentVenue.fourSquareId)
-                .asJsonObject().setCallback(new FutureCallback<JsonObject>() {
+        AstraUploader uploader = new AstraUploader(filepath, currentVenue.fourSquareId, FourSquareCheckinId, this);
+        FutureCallback<JsonObject> callback = new FutureCallback<JsonObject>() {
             @Override
             public void onCompleted(Exception e, JsonObject jsonObject) {
+                Log.d("test", new Gson().toJson(jsonObject));
                 if(jsonObject.get("ok").getAsBoolean()){
-                    if(jsonObject.get("data").getAsJsonObject().get("status").getAsString().equals("ready")){
-
-                    }
+                    Log.d("test", "upload success");
+                    launchCheckin();
                 }
             }
-        });
+        };
+        uploader.startUpload(callback);
     }
 
-    private void uploadCheckinImage(){
-        Ion.with(this).load("https://api.astra.io/v0/bucket/"+currentVenue.fourSquareId)
-              //  .uploadProgressBar(uploadProgressBar)
-                .setMultipartParameter("type", "image")
-                .setMultipartParameter("name",FourSquareCheckinId)
-                .setMultipartFile("file", new File(selfieFilePath))
-                .asJsonObject().setCallback(new FutureCallback<JsonObject>() {
-            @Override
-            public void onCompleted(Exception e, JsonObject jsonObject) {
-                if(jsonObject.get("ok").getAsBoolean()){
-                    Log.d("test","upload success");
-                }
-            }
-        });
-    }
 
     private boolean servicesConnected() {
         // Check that Google Play services is available
@@ -306,7 +276,7 @@ public class MainActivity extends Activity implements
                     if(data.getExtras().containsKey("image_path")) {
                         String image_path = data.getStringExtra("image_path");
                         Log.d("test",image_path);
-                        launchCheckin(image_path);
+                        uploadToAstra(image_path);
                        // Toast.makeText(this, image_path, Toast.LENGTH_SHORT).show();
                     }
                 }

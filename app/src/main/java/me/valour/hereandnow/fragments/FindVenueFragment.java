@@ -99,7 +99,7 @@ public class FindVenueFragment extends Fragment {
 
     }
 
-    public void prepareCheckin(Venue venue){
+    public void prepareCheckin(final Venue venue){
         mListener.setCurrentVenue(venue);
 
         String url = "https://api.foursquare.com/v2/checkins/add";
@@ -123,9 +123,23 @@ public class FindVenueFragment extends Fragment {
                         String checkinId = checkinObject.get("id").getAsString();
 
                         Log.d("test","your checkin id is "+checkinId);
-                        mListener.setCheckinId(checkinId);
+                        logToServer(venue.fourSquareId, checkinId);
                     }
                 });
+    }
+
+    public void logToServer(String venueID, final String checkinID){
+        String url = "http://hereandnowserver.appspot.com/checkin";
+        Ion.with(this).load(url)
+                .setBodyParameter("venue_id",venueID)
+                .setBodyParameter("checkin_id",checkinID)
+                .setBodyParameter("secret","himitsu")
+                .asJsonObject().setCallback(new FutureCallback<JsonObject>() {
+            @Override
+            public void onCompleted(Exception e, JsonObject jsonObject) {
+                mListener.setCheckinId(checkinID);
+            }
+        });
     }
 
     @Override
