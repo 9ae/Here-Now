@@ -41,6 +41,8 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 
+import me.valour.hereandnow.fragments.NativeCameraFragment;
+
 /**
  * This activity assists in trapping the camera's "State" e.g. where the camera plans
  * on saving it's resulting file and URI. This activity saves this information to the bundle
@@ -62,14 +64,14 @@ public class CameraActivity extends Activity {
     private String mCurrentPhotoPath = null;
     private Uri mCapturedImageURI = null;
 
-    static final int REQUEST_TAKE_PHOTO = 11111;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(me.valour.hereandnow.R.layout.activity_main);
-        Log.d("test","camera activity started");
-        launchCamera();
+
+        FragmentManager fm  = getFragmentManager();
+        fm.beginTransaction().add(me.valour.hereandnow.R.id.container, new NativeCameraFragment()).commit();
+
     }
 
     @Override
@@ -106,91 +108,12 @@ public class CameraActivity extends Activity {
         this.mCurrentPhotoPath = mCurrentPhotoPath;
     }
 
-    public void saveCurrentPhotoPath(){
-        Intent intent = getIntent();
-        intent.putExtra("image_path", this.mCurrentPhotoPath);
-        setResult(RESULT_OK, intent);
-    }
-
     public Uri getCapturedImageURI() {
         return mCapturedImageURI;
     }
 
     public void setCapturedImageURI(Uri mCapturedImageURI) {
         this.mCapturedImageURI = mCapturedImageURI;
-    }
-
-    public void launchCamera(){
-        Context context = this;
-        PackageManager packageManager = context.getPackageManager();
-        if(packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT) == false){
-            Toast.makeText(this, "No front camera. Try your luck with the rear camera.", Toast.LENGTH_LONG) .show();
-        } else if(packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA)==false){
-            Toast.makeText(this, "What?! You have no camera at all?", Toast.LENGTH_LONG) .show();
-            return;
-        }
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-      //  CameraActivity cameraActivity = this;
-        if (takePictureIntent.resolveActivity(this.getPackageManager()) != null) {
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            }
-            catch (IOException ex) { // Error occurred while creating the File
-                Toast toast = Toast.makeText(this, "There was a problem saving the photo...", Toast.LENGTH_SHORT); toast.show();
-            }
-
-            if (photoFile != null) {
-                Uri fileUri = Uri.fromFile(photoFile);
-                this.setCapturedImageURI(fileUri);
-                this.setCurrentPhotoPath(fileUri.getPath());
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, this.getCapturedImageURI());
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-            }
-
-        }
-    }
-
-    /**
-     * Creates the image file to which the image must be saved.
-     * @return
-     * @throws IOException
-     */
-    protected File createImageFile() throws IOException {
-        // Create an image file name
-        String imageFileName = "selfie";
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        this.setCurrentPhotoPath("file:" + image.getAbsolutePath());
-        return image;
-    }
-
-    /**
-     * The activity returns with the photo.
-     * @param requestCode
-     * @param resultCode
-     * @param data
-     */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
-
-            // Show the full sized image.
-            // setFullImageFromFilePath(activity.getCurrentPhotoPath(), previewImage);
-            this.saveCurrentPhotoPath();
-            this.finish();
-        } else {
-            Toast.makeText(this, "Image Capture Failed", Toast.LENGTH_SHORT)
-                    .show();
-        }
     }
 
 }
