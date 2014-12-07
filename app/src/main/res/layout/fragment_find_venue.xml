@@ -4,23 +4,18 @@
     tools:context="me.valour.hereandnow.fragments.FindVenueFragment"
     android:orientation="vertical">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment" />
-
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/input_search_venue"
-     />
+        android:hint="@string/txt_search_venue"
+        android:singleLine="true"
+        android:imeOptions="actionDone"
+        android:inputType="text" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Search"
-        android:id="@+id/btn_search_venue"
-        android:layout_gravity="center_horizontal" />
-
+    <ListView
+        android:id="@+id/lv_venues"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

@@ -10,6 +10,7 @@ public class Himitsu {
         public static final String clientId = "YUWS2WSW0C2QM2MYTZIUZ3MEASBDMQ1TICUVFTGRJUWIVTA2";
         public static final String clientSecret = "EO22QETXYNAJJORLPI5IBZ0RRAFDJU0YHTS3YVME5UQNYN4P";
         public static final String propKey = "FourSquare_token";
+        public static final String version = "20130815";
     }
 
     public class Aviary {

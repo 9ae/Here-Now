@@ -26,6 +26,7 @@ import com.google.android.gms.location.LocationClient;
 
 import me.valour.hereandnow.R;
 import me.valour.hereandnow.constants.Himitsu;
+import me.valour.hereandnow.fragments.CheckInFragment;
 import me.valour.hereandnow.fragments.FindVenueFragment;
 import me.valour.hereandnow.fragments.LoginFragment;
 
@@ -33,6 +34,7 @@ import me.valour.hereandnow.fragments.LoginFragment;
 public class MainActivity extends Activity implements
         LoginFragment.LoginFragmentListener,
         FindVenueFragment.FindVenueFragmentListener,
+        CheckInFragment.OnFragmentInteractionListener,
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener{
 
@@ -40,7 +42,18 @@ public class MainActivity extends Activity implements
     Location mCurrentLocation;
     LocationClient mLocationClient;
 
+    private String FourSquareCheckinId = null;
+
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+
+    static final int CAMERA_ACTIVITY = 1001;
+
+
+
+    public void launchCapture(){
+        Intent intent = new Intent(this, CameraActivity.class);
+        startActivityForResult(intent, CAMERA_ACTIVITY);
+    }
 
     @Override
     protected void onStart() {
@@ -70,6 +83,7 @@ public class MainActivity extends Activity implements
                         .commit();
             }
         }
+
     }
 
 
@@ -137,11 +151,22 @@ public class MainActivity extends Activity implements
         }
     }
 
+    @Override
+    public void setCheckinId(String checkinId){
+        FourSquareCheckinId = checkinId;
+        launchCapture();
+    }
+
     public void launchFindVenue(String token){
         FindVenueFragment fragment = FindVenueFragment.newInstance(token);
         fm.beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
+    }
+
+    public void launchCheckin(String imagePath){
+        CheckInFragment fragment = CheckInFragment.newInstance(FourSquareCheckinId, getToken(Himitsu.FourSquare.propKey) ,imagePath);
+        fm.beginTransaction().replace(R.id.container, fragment).commit();
     }
 
     private boolean servicesConnected() {
@@ -197,6 +222,18 @@ public class MainActivity extends Activity implements
 
                         break;
                 }
+             break;
+
+            case CAMERA_ACTIVITY:
+                if(resultCode==Activity.RESULT_OK){
+                    if(data.getExtras().containsKey("image_path")) {
+                        String image_path = data.getStringExtra("image_path");
+                        Log.d("test",image_path);
+                        launchCheckin(image_path);
+                       // Toast.makeText(this, image_path, Toast.LENGTH_SHORT).show();
+                    }
+                }
+                break;
         }
     }
 
