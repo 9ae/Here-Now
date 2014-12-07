@@ -100,6 +100,8 @@ public class FindVenueFragment extends Fragment {
     }
 
     public void prepareCheckin(Venue venue){
+        mListener.setCurrentVenue(venue);
+
         String url = "https://api.foursquare.com/v2/checkins/add";
         url+="?oauth_token="+fourSquareToken;
         url+="&venueId="+venue.fourSquareId;
@@ -212,6 +214,8 @@ public class FindVenueFragment extends Fragment {
         public Location getLocation();
 
         public void setCheckinId(String checkinId);
+
+        public void setCurrentVenue(Venue venue);
     }
 
 }

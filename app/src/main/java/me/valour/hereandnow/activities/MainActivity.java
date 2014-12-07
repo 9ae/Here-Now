@@ -26,12 +26,19 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.Future;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+
+import java.io.File;
 
 import me.valour.hereandnow.R;
 import me.valour.hereandnow.constants.Himitsu;
 import me.valour.hereandnow.fragments.CheckInFragment;
 import me.valour.hereandnow.fragments.FindVenueFragment;
 import me.valour.hereandnow.fragments.LoginFragment;
+import me.valour.hereandnow.objects.Venue;
 
 
 public class MainActivity extends Activity implements
@@ -46,6 +53,8 @@ public class MainActivity extends Activity implements
     LocationClient mLocationClient;
 
     private String FourSquareCheckinId = null;
+    private Venue currentVenue = null;
+    private String selfieFilePath = null;
 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
@@ -55,6 +64,14 @@ public class MainActivity extends Activity implements
     public void launchCapture(){
         Intent intent = new Intent(this, CameraActivity.class);
         startActivityForResult(intent, CAMERA_ACTIVITY);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!mLocationClient.isConnected()){
+            mLocationClient.connect();
+        }
     }
 
     @Override
@@ -159,6 +176,11 @@ public class MainActivity extends Activity implements
         launchCapture();
     }
 
+    @Override
+    public void setCurrentVenue(Venue venue){
+        currentVenue = venue;
+    }
+
     public void launchFindVenue(String token){
         FindVenueFragment fragment = FindVenueFragment.newInstance(token);
         fm.beginTransaction()
@@ -169,6 +191,59 @@ public class MainActivity extends Activity implements
     public void launchCheckin(String imagePath){
         CheckInFragment fragment = CheckInFragment.newInstance(FourSquareCheckinId, getToken(Himitsu.FourSquare.propKey) ,imagePath);
         fm.beginTransaction().replace(R.id.container, fragment).commit();
+    }
+
+    public void uploadToAstra(String filepath){
+        if(currentVenue==null || FourSquareCheckinId==null){
+            return;
+        }
+        selfieFilePath = filepath;
+        Ion.with(this)
+                .load("https://api.astra.io/v0/bucket/"+currentVenue.fourSquareId)
+                .setHeader(Himitsu.Astra.authName, Himitsu.Astra.secret)
+                .asJsonObject().setCallback(new FutureCallback<JsonObject>() {
+            @Override
+            public void onCompleted(Exception e, JsonObject result) {
+                if(result.get("ok").getAsBoolean()){
+
+                } else {
+                    createVenueBucket();
+                }
+            }
+        });;
+
+    }
+
+    private void createVenueBucket(){
+        Ion.with(this).load("https://api.astra.io/v0/bucket")
+                .setHeader(Himitsu.Astra.authName,Himitsu.Astra.secret)
+                .setBodyParameter("name",currentVenue.fourSquareId)
+                .asJsonObject().setCallback(new FutureCallback<JsonObject>() {
+            @Override
+            public void onCompleted(Exception e, JsonObject jsonObject) {
+                if(jsonObject.get("ok").getAsBoolean()){
+                    if(jsonObject.get("data").getAsJsonObject().get("status").getAsString().equals("ready")){
+
+                    }
+                }
+            }
+        });
+    }
+
+    private void uploadCheckinImage(){
+        Ion.with(this).load("https://api.astra.io/v0/bucket/"+currentVenue.fourSquareId)
+              //  .uploadProgressBar(uploadProgressBar)
+                .setMultipartParameter("type", "image")
+                .setMultipartParameter("name",FourSquareCheckinId)
+                .setMultipartFile("file", new File(selfieFilePath))
+                .asJsonObject().setCallback(new FutureCallback<JsonObject>() {
+            @Override
+            public void onCompleted(Exception e, JsonObject jsonObject) {
+                if(jsonObject.get("ok").getAsBoolean()){
+                    Log.d("test","upload success");
+                }
+            }
+        });
     }
 
     private boolean servicesConnected() {

@@ -27,6 +27,8 @@ package me.valour.hereandnow.fragments;
         import java.util.Date;
         import java.util.List;
 
+        import me.valour.hereandnow.activities.CameraActivity;
+
 /**
  * Take a picture directly from inside the app using this fragment.
  *
@@ -349,9 +351,9 @@ public class NativeCameraFragment extends Fragment {
                 int previewHeight = height;
 
                 if (mPreviewSize != null){
-                    Display display = ((WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                    /*Display display = ((WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 
-                    switch (display.getRotation())
+                    /switch (display.getRotation())
                     {
                         case Surface.ROTATION_0:
                             previewWidth = mPreviewSize.height;
@@ -371,10 +373,11 @@ public class NativeCameraFragment extends Fragment {
                             previewHeight = mPreviewSize.height;
                             mCamera.setDisplayOrientation(180);
                             break;
-                    }
+                    }*/
                 }
 
                 final int scaledChildHeight = previewHeight * width / previewWidth;
+                mCamera.setDisplayOrientation(90);
                 mCameraView.layout(0, height - scaledChildHeight, width, height);
             }
         }
@@ -392,7 +395,7 @@ public class NativeCameraFragment extends Fragment {
             Camera.Size optimalSize = null;
 
             final double ASPECT_TOLERANCE = 0.1;
-            double targetRatio = (double) height / width;
+            double targetRatio =  (double) height / width;
 
             // Try to find a size match which suits the whole screen minus the menu on the left.
             for (Camera.Size size : sizes){
@@ -433,6 +436,10 @@ public class NativeCameraFragment extends Fragment {
                 fos.write(data);
                 fos.close();
 
+                CameraActivity activity = (CameraActivity) getActivity();
+                activity.setCurrentPhotoPath(pictureFile.getAbsolutePath());
+                activity.saveCurrentPhotoPath();
+                activity.finish();
                 // Restart the camera preview.
                 safeCameraOpenInView(mCameraView);
             } catch (FileNotFoundException e) {
@@ -450,7 +457,7 @@ public class NativeCameraFragment extends Fragment {
     private File getOutputMediaFile(){
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "me.valour.hereandnow");
+                Environment.DIRECTORY_PICTURES), "hereandnow");
 
         if (! mediaStorageDir.exists()){
             if (! mediaStorageDir.mkdirs()){

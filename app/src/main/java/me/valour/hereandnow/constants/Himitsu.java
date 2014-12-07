@@ -11,6 +11,9 @@ public class Himitsu {
         public static final String clientSecret = "EO22QETXYNAJJORLPI5IBZ0RRAFDJU0YHTS3YVME5UQNYN4P";
         public static final String propKey = "FourSquare_token";
         public static final String version = "20130815";
+
+        public static final String propCurrentVenue = "current_venue_id";
+        public static final String propCheckInId = "checkin_id";
     }
 
     public class Aviary {
@@ -19,6 +22,7 @@ public class Himitsu {
     }
 
     public class Astra {
-        public static final String secret = "GVGuVZPT1HM6zKoIWC9bvf295pNv3Qf";
+        public static final String authName = "Astra-Secret";
+        public static final String secret = "GVGuVZPT1HM6zKoIWC9bvf295pNv3Qf-";
     }
 }

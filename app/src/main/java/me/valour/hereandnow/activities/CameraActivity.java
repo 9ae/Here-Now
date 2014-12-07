@@ -116,4 +116,10 @@ public class CameraActivity extends Activity {
         this.mCapturedImageURI = mCapturedImageURI;
     }
 
+    public void saveCurrentPhotoPath(){
+        Intent intent = getIntent();
+        intent.putExtra("image_path", this.mCurrentPhotoPath);
+        setResult(RESULT_OK, intent);
+    }
+
 }
